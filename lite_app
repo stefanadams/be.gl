@@ -35,7 +35,7 @@ __DATA__
   </head>
   <body>
     <!-- Code: <input name=code value="<%= $code %>" /><div id="code-btn">Submit</div><br /> -->
-    <a id="map" href="#"><div id="loc"></div></a>
+    <br /><div><a href="/<%= $code %>"><div class="link"><%= $code %></div></a><div class="link"> : </div><a id="map" href="#"><div id="loc" class="link"></div></a></div>
     <div id="googlemaps"></div>
 
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDKw1I9ZlI-piCBp2zXSuviBDVRjju-aYI&sensor=true&libraries=adsense"></script>
@@ -72,7 +72,8 @@ h1 {font-size:18px;}
 h3 {margin-bottom:.5em; }
 //#googlemaps { height: 90%; }
 #iw {width:260px;font-family:monospace;}
-#loc {padding:.5em;margin:.5em;;align-vertical:bottom;font-size:40px;}
+div {padding:.5em;margin:.5em;display:inline;align-vertical:bottom;height:100px}
+.link {padding:.5em;margin:.5em;font-size:40px;align-vertical:bottom}
 .navbar {margin:0}
 img {max-width:none;}
 hr {margin:5px 0}
