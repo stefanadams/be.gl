@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="http://ctrlq.org/common/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <table>
+    <tr>
+    <td><img src="/beagle.jpg" /></td>
+    <td>
+    <form action="/" method="get">
+      <input name="code" />
+      <input type="submit" value="Locate!" />
+    </form>
+    </td>
+    </tr>
+    </table>
+
+    <div class="inline">
+      <a href="/<%= $code %>"><div id="code" class="link"><%= $code %></div></a>
+      <div class="link"> : </div>
+      <a id="map" href="#"><div id="loc" class="link"></div></a>
+    </div>
+    <div id="googlemaps"></div>
+
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDKw1I9ZlI-piCBp2zXSuviBDVRjju-aYI&sensor=true&libraries=adsense"></script>
+    <script src="geoposition.js"></script>
+    <script src="http://ctrlq.org/common/js/jquery.min.js"></script>
+    <script src="http://ctrlq.org/common/js/bootstrap.min.js"></script>
+    <script src="http://ctrlq.org/common/js/ga.js"></script>
+    <script src="functions.js"></script>
+    <script>
+      function gmap(lat, lon) {
+        $('#loc').html(lat + ', ' + lon);
+        $('#map').attr('href', "https://www.google.com/maps/place/"+lat+","+lon+"/\@"+lat+","+lon+",15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0");
+        console.log("Gmap: "+lat+", "+lon);
+        showMap(lat, lon);
+      }
+      function locationFound(position) {
+      % if ( @$loc ) {
+        gmap(<%= join ', ', @$loc %>);
+      % } else {
+        var lat = position.coords.latitude.toFixed(5);
+        var lon = position.coords.longitude.toFixed(5);
+	$.post('/<%= $code %>', {lat: lat, lon: lon});
+        gmap(lat, lon);
+      % }
+      }
+      $('#map').hover(function(){$('#googlemaps').show()});
+    </script>
+
+  </body>
+</html>
+
