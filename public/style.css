@@ -7,7 +7,7 @@ h1 {font-size:18px;}
 h3 {margin-bottom:.5em; }
 #googlemaps { height: 50%; display:none }
 #iw {width:260px;font-family:monospace;}
-#code {background-color: yellowgreen}
+#code {background-color: lightgreen}
 //div {padding:.5em;margin:.5em;display:inline;align-vertical:bottom;height:100px}
 .inline {display:inline}
 .link {padding:.5em;margin:.5em;font-size:40px;align-vertical:bottom}
