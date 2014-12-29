@@ -17,7 +17,7 @@ get '/:code' => {code => ''} => sub {
 
 post '/:code' => sub {
   my $c = shift;
-  my ($code, $geo) = ($c->param('code'), [$c->param('lat'), $c->param('lon')]);
+  my ($code, $geo) = ($c->param('code'), [$c->param('lat'), $c->param('lng')]);
   $c->app->log->info($code . ' : '. join ',', @$geo);
   $c->redis->set($code => j($geo)) unless $c->redis->get($code);
   $c->redis->expire($code => 3 * 60);
