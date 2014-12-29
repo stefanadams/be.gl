@@ -1,81 +1,51 @@
-      var map, latLng, marker, infoWindow, ad;
+var map, latLng, marker, infoWindow;
 
-      function initialize() {
-
-        var myOptions = {
-          zoom: 14,
-          panControl: false, 
-          streetViewControl: false, 
-          scaleControl: false,
-          scaleControlOptions: {position: google.maps.ControlPosition.BOTTOM_RIGHT},
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-
-        map = new google.maps.Map(document.getElementById('googlemaps'), myOptions); 
+function initialize() {
+  map = new google.maps.Map(document.getElementById('googlemaps'), {
+    zoom: 14,
+    panControl: false, 
+    streetViewControl: false, 
+    scaleControl: false,
+    scaleControlOptions: {position: google.maps.ControlPosition.BOTTOM_RIGHT},
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  }); 
 
 	if (geoPosition.init()) {
-            console.log(locationFound);
-	    geoPosition.getCurrentPosition(locationFound, defaultLocation, {enableHighAccuracy:true});
-        }
-        else {
-	    defaultLocation();
-        }
-      }
+	   geoPosition.getCurrentPosition(locationFound, null, {enableHighAccuracy:true});
+  }
+}
 
-      function defaultLocation() {
-        showMap(38.8977, -77.0366);
-      }
+function gmap(lat, lng) {
+  $('#map').attr('href', "https://www.google.com/maps/place/"+lat+","+lng+"/\@"+lat+","+lng+",15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0").html(lat + ', ' + lng);
+  showMap(lat, lng);
+}
+      
+function showMap(lat, lng) {
+  latLng = new google.maps.LatLng(lat, lng);
+  map.setCenter(latLng);
+  marker = new google.maps.Marker({
+    position: latLng,
+    map: map,
+    draggable: false,
+    animation: google.maps.Animation.DROP
+  });
 
-      function showMap(lat, lng) {
+	console.log("Show Map: " + marker.getPosition().lat() + ',' + marker.getPosition().lng());
 
-        latLng = new google.maps.LatLng(lat, lng);
+  infoWindow = new google.maps.InfoWindow({
+    content: '<div id="iw"><a target="_blank" href="https://www.google.com/maps/place/'+marker.getPosition().lat()+','+marker.getPosition().lng()+'/\@'+marker.getPosition().lat()+','+marker.getPosition().lng()+',15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0"><strong>Latitude ::</strong> ' + marker.getPosition().lat() + '<br/><strong>Longitude::</strong> ' + marker.getPosition().lng() + '</a></div>'
+  });
+  infoWindow.open(map, marker);
 
-        var adUnitDiv = document.createElement('div');
+  google.maps.event.addListener(marker, 'dragstart', function (e) {
+    infoWindow.close();
+  });
 
-	var adWidth = window.innerWidth || document.documentElement.clientWidth;
+  google.maps.event.addListener(marker, 'dragend', function (e) {
+    var point = marker.getPosition();
+    map.panTo(point);
+    geocode(point);
+  });
+}
 
-	if ( adWidth >= 728 ) 
-	  adFormat = google.maps.adsense.AdFormat.LEADERBOARD;
-	else if ( adWidth >= 300 ) 
-          adFormat = google.maps.adsense.AdFormat.SMALL_SQUARE; 
-        else
-          adFormat = google.maps.adsense.AdFormat.X_LARGE_VERTICAL_LINK_UNIT;      
-
-        var adUnitOptions = {
-          format: adFormat,
-          position: google.maps.ControlPosition.BOTTOM,
-          map: map,
-          visible: false,
-          publisherId: 'ca-pub-9238225005366006'
-        }
-
-//        ad = new google.maps.adsense.AdUnit(adUnitDiv, adUnitOptions);
-
-        map.setCenter(latLng);
-
-        marker = new google.maps.Marker({
-           position: latLng, map: map, draggable: false, animation: google.maps.Animation.DROP
-        });
-
-        infoWindow = new google.maps.InfoWindow({
-           content: '<div id="iw"><strong>Latitude ::</strong> ' + marker.getPosition().lat() + '<br/><strong>Longitude::</strong> ' + marker.getPosition().lng() + '</div>'
-        });
-	console.log(marker.getPosition().lat() + ',' + marker.getPosition().lng());
-	//$.post('/email.cgi', {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()});
-
-        infoWindow.open(map, marker);
-
-        google.maps.event.addListener(marker, 'dragstart', function (e) {
-           infoWindow.close();
-        });
-
-        google.maps.event.addListener(marker, 'dragend', function (e) {
-           var point = marker.getPosition();
-           map.panTo(point);
-           geocode(point);
-        });
-
-      }
-
-      google.maps.event.addDomListener(window, 'load', initialize);
-
+google.maps.event.addDomListener(window, 'load', initialize);
