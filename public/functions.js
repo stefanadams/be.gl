@@ -33,7 +33,7 @@ function showMap(lat, lng) {
 	console.log("Show Map: " + marker.getPosition().lat() + ',' + marker.getPosition().lng());
 
   infoWindow = new google.maps.InfoWindow({
-    content: '<div id="iw"><a target="_blank" href="https://www.google.com/maps/place/'+marker.getPosition().lat()+','+marker.getPosition().lng()+'/\@'+marker.getPosition().lat()+','+marker.getPosition().lng()+',15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0"><strong>Latitude ::</strong> ' + marker.getPosition().lat() + '<br/><strong>Longitude::</strong> ' + marker.getPosition().lng() + '</a></div>'
+    content: '<div id="iw"><a target="_blank" href="https://www.google.com/maps/place/'+lat+','+lng+'/\@'+lat+','+lng+',15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0"><strong>Latitude ::</strong> ' + lat + '<br/><strong>Longitude::</strong> ' + lng + '</a></div>'
   });
   infoWindow.open(map, marker);
 
