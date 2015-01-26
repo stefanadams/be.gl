@@ -4,18 +4,15 @@ use Digest::MD5 qw(md5_hex);
 use Mojo::Redis2;
 use Mojo::JSON 'j';
 
-use Array::Utils qw(:all);
-use Math::BigFloat;
 use Hash::Diff qw(left_diff);
 
 plugin 'AssetPack';
 
-app->asset('begl.js' => 'https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js', 'reconnecting-websocket.js');
-app->asset('begl.css' => 'style.css');
+app->asset('begl.js' => 'https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js', 'js/reconnecting-websocket.js', 'js/markerWithLabels.js');
+app->asset('begl.css' => 'css/normalize.css', 'css/main.css');
 app->sessions->default_expiration(86400*365*10);
 
 our $pals = {};
-Math::BigFloat->precision(-3);
 
 helper redis => sub { shift->stash->{redis} ||= Mojo::Redis2->new; };
 helper pal_name => sub {
@@ -41,18 +38,12 @@ get '/' => sub {
   $c->render('index');
 };
 
-get '/sample' => sub {
-  my $c = shift;
-  my $length = 3;
-  $c->session(code => code(3)) unless $c->session('code');
-  $c->render('sample');
-};
-
 post '/addpal' => sub {
   my $c = shift;
   my $code = $c->param('code') or return $c->reply->not_found;
+  my $name = $c->param('name') or return $c->reply->not_found;
   my $pals = $c->session('pals');
-  $pals->{$code} = $code;
+  $pals->{$code} = $name || $code;
   $c->session({pals => $pals});
   $c->render(status => 200, text => '');
 };
@@ -76,10 +67,10 @@ websocket '/pals' => => sub {
     return $c->send(1) if $msg eq '1';
     $code or return $c->send({json => {}});
     if( my $json = j($msg) ) {
-      if ( $json eq 'HASH' ) {
+      if ( ref $json eq 'HASH' ) {
         return $c->send({json => {}}) unless $json->{lat} && $json->{lng};
         $log->info("$code : $msg");
-        $redis->setex("pals.$code" => 3*60 => $msg);
+        $redis->setex("pals.$code" => 3*60 => j([$json->{lat}, $json->{lng}]));
       }
     }
     $pals->{$code}->{last} = $pals->{$code}->{this} if $pals->{$code}->{this};
@@ -93,184 +84,13 @@ websocket '/pals' => => sub {
   });
 };
 
-Mojo::IOLoop->recurring(3 => sub {
-  my $redis = app->redis;
-  my $r = code(1);
-  $redis->setex("pals.$r" => 3*60 => j([38+Math::BigFloat->new(rand()), -90+Math::BigFloat->new(rand())]));
-  warn "$r: ".$redis->get("pals.$r");
-});
+#use Math::BigFloat;
+#Math::BigFloat->precision(-3);
+#Mojo::IOLoop->recurring(3 => sub {
+#  my $redis = app->redis;
+#  my $r = code(1);
+#  $redis->setex("pals.$r" => 5 => j([38+Math::BigFloat->new(rand()), -90-Math::BigFloat->new(rand())]));
+#  #warn "$r: ".$redis->get("pals.$r");
+#});
 
 app->start;
-
-__DATA__
-@@ sample.html.ep
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Remove Markers</title>
-    %= asset 'begl.css'
-    %= asset 'begl.js'
-    <style>
-        .map-marker-label {
-          position: absolute;
-          color: blue;
-          font-size: 16px;
-          font-weight: bold;
-        }
-    </style>
-    <script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
-    <script>
-      var beglmap;
-      var pals = [];
-      var me;
-      var interval = 0;
-      var ws = new ReconnectingWebSocket('wss://be-gl-s1037989.c9.io/pals');
-      var geo_options = {enableHighAccuracy: true, maximumAge: 30000, timeout: 27000};
-      var markerSize = { x: 22, y: 40 };
-  
-      google.maps.Marker.prototype.setLabel = function(label){
-        this.label = new MarkerLabel({
-          map: this.map,
-          marker: this,
-          text: label
-        });
-        this.label.bindTo('position', this, 'position');
-      };
-  
-      var MarkerLabel = function(options) {
-        this.setValues(options);
-        this.span = document.createElement('span');
-        this.span.className = 'map-marker-label';
-      };
-  
-      MarkerLabel.prototype = $.extend(new google.maps.OverlayView(), {
-        onAdd: function() {
-          this.getPanes().overlayImage.appendChild(this.span);
-          var self = this;
-          this.listeners = [
-          google.maps.event.addListener(this, 'position_changed', function() { self.draw();    })];
-        },
-        draw: function() {
-          var text = String(this.get('text'));
-          var position = this.getProjection().fromLatLngToDivPixel(this.get('position'));
-          this.span.innerHTML = text;
-          this.span.style.left = (position.x - (markerSize.x / 2)) - (text.length * 3) + 10 + 'px';
-          this.span.style.top = (position.y - markerSize.y + 40) + 'px';
-        }
-      });
-  
-      function getLatLng(position){
-        var lat = 0.0000;
-        var lng = 0.0000;
-        if ( position ) {
-          if ( typeof position === 'object' && "coords" in position ) {
-            lat = position.coords.latitude.toFixed(4);
-            lng = position.coords.longitude.toFixed(4);
-          } else if ( typeof position === 'string' ) {
-            var ll = position.split(",");
-            lat = ll[0];
-            lng = ll[1];
-          }
-        }
-        var ll = {lat: parseFloat(lat), lng: parseFloat(lng)};
-        //console.log(ll);
-        return ll;
-      }
-      function initialize() {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          var ll = getLatLng(position)
-          beglmap = new google.maps.Map(document.getElementById('map-canvas'), {zoom: 8, center: ll});
-          me = new google.maps.Marker({
-            position: ll,
-            icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-            map: beglmap
-          });
-        });
-      }
-
-      ws.onopen = function (event) {
-        console.log("Web Socket Open!");
-        navigator.geolocation.getCurrentPosition(function(position) {
-          ws.send(JSON.stringify(getLatLng(position)));
-        });
-        interval = setInterval(function(){
-          ws.send(1);
-          navigator.geolocation.getCurrentPosition(function(position) {
-            var ll = getLatLng(position);
-            //beglmap.setCenter(ll);
-            me.setPosition(ll);
-            ws.send(JSON.stringify(ll));
-          });
-        }, 5 * 1000);
-        // Every now and then refresh the full list of markers
-      };
-      ws.onerror = function () {
-        console.log("Web Socket Error!");
-      };
-      ws.onclose = function () {
-        console.log("Web Socket Close!");
-        window.clearInterval(interval);
-      };
-      ws.onmessage = function (event) {
-        if ( event.data == '1' ) return;
-        var js = JSON.parse(event.data);
-        //console.log(js);
-        if ( js.del ) {
-          for (var pal in js.del) {
-            console.log("Del: "+js.del[pal], getLatLng(pal));
-            if ( pal in pals ) {
-              if ("infoWindow" in pals[pal]) pals[pal].infoWindow.setMap(null);
-              pals[pal].setMap(null);
-              delete pals[pal];
-            }
-          }
-        }
-        if ( js.add ) {
-          for (var pal in js.add) {
-            var ll = getLatLng(pal);
-            console.log("Add: "+js.add[pal], ll);
-            var color = 'red';
-            if ( js.add[pal] != pal ) color = 'yellow';
-            pals[pal] = new google.maps.Marker({
-              position: ll,
-              icon: "https://maps.google.com/mapfiles/ms/icons/"+color+"-dot.png",
-              label: js.add[pal],
-              map: beglmap
-            });
-          }
-        }
-      };
-
-      if ("geolocation" in navigator) {
-        console.log("/* geolocation is available */");
-        google.maps.event.addDomListener(window, 'load', initialize);
-      } else {
-        console.log("/* geolocation IS NOT available */");
-      }
-
-      $(function(){
-        $('#addpal').click(function(){
-          console.log("Add pal");
-          if ( $('#code').val() ) {
-            console.log("Adding pal: "+$('#code').val());
-            $.post('/addpal', {code: $('#code').val()}, function(data){
-              $('#code').val('');
-            });
-          }
-        });
-      });
-    </script>
-  </head>
-  <body>
-    <div>Your code: <%= session 'code' %></div>
-    <input id="code" type=text>
-    <input id="addpal" type=button value="Add Pal">
-    <!--
-    <div id="panel">
-      <input onclick="clearMarkers();" type=button value="Everyone">
-      <input onclick="showMarkers();" type=button value="Pals">
-    </div>
-    -->
-    <div id="map-canvas"></div>
-  </body>
-</html>
