@@ -1,0 +1,159 @@
+* {
+    list-style: none;
+}
+
+body {
+    color: #744d29;
+    font-family: 'Muli', serif;
+}
+
+html, body, .main-wrapper, #map-canvas {
+    height: 100%;
+    margin: 0px;
+    padding: 0px
+}
+      
+#map-canvas {
+    width: 100%;
+}
+
+
+.labels-me {
+    color: green;
+    background-color: white;
+    font-family: "Lucida Grande", "Arial", sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    width: 40px;
+    border: 2px solid green;
+    white-space: nowrap;
+}
+.labels-pal {
+    color: orange;
+    background-color: white;
+    font-family: "Lucida Grande", "Arial", sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    width: 40px;
+    border: 2px solid orange;
+    white-space: nowrap;
+}
+
+
+      
+/* FONT STYLES
+================================= */
+
+h1 {
+    color: #744d29;
+    font-family: 'Dosis', sans-serif;
+    font-size: 2em;
+}
+
+h2 {
+    color: #744d29;
+    font-family: 'Muli', serif;
+    font-size: .6em;
+}
+
+h3 {
+    margin: 0px;
+}
+
+a {
+    text-decoration: none;
+    color: #744D29;
+}
+
+/* LAYOUTS
+=================================  */
+
+.header{
+    background-color: #FC923B;
+    padding: 10px;
+    border-bottom: solid 3px #744d29;
+    max-height: 80px;
+}
+
+.total-logo{
+    display: inline-block;
+    width: 50%;
+}
+
+.right{
+    float: right;
+}
+
+.left{
+    float: left;
+}
+
+.center{
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.button{
+    display: block;
+}
+
+.private-code{
+    background-color: #F8A541;
+    padding: 10px 0px;
+    max-height: 30px;
+}
+
+#googlemaps{
+    background-color: #F9F5ED;
+    padding: 10px;
+}
+
+.footer{
+    background-color: #FC923B;
+    border-top: solid 3px #744d29;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 5px 10px;
+}
+
+.beagle{
+    /*background-color: blue;*/
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.sniff{
+    /*background-color: green;*/
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.nav, .nav li{
+    display: inline-block;
+    margin-right: 10px;
+}
+
+/* CLEARFIX
+=================================  */
+.group::after {
+    content: " ";
+    display: table;
+    clear: both;
+}
+
+/* MEDIA QUERIES
+================================= */
+@media (min-width: 500px) {
+    h1 {font-size: 2.8em;}
+    h2 {font-size: .8em;}
+}
+
+@media (min-width: 700px) {
+    h1 {font-size: 3.2em;}
+    h2 {font-size: 1em;}
+}
