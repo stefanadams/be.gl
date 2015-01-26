@@ -1,0 +1,55 @@
+use Mojolicious::Lite;
+
+plugin 'AssetPack';
+app->asset('begl.js' => (
+  'https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js',
+  '/reconnecting-websocket.js'
+));
+
+# Render template "index.html.ep" from the DATA section
+get '/' => {template => 'index'};
+
+# WebSocket service used by the template to extract the title from a web site
+websocket '/title' => sub {
+  my $c = shift;
+  $c->on(message => sub {
+    my ($c, $msg) = @_;
+    $c->send(scalar localtime);
+  });
+};
+
+app->start;
+__DATA__
+
+@@ index.html.ep
+% my $url = url_for 'title';
+% $url = $url->to_abs;
+%# c9 is behind a proxy and runs secure but mojo assumes insecure
+%# Is there a better way to change the scheme?
+% $url =~ s/^ws:/wss:/;
+%= asset 'begl.js'
+<script>
+  var ws = new ReconnectingWebSocket('<%= $url %>');
+  ws.onerror = function () {
+    console.log("Web Socket Error!");
+  };
+  ws.onmessage = function (event) {
+    //console.log("Web Socket message received!");
+    document.body.innerHTML = event.data;
+  };
+  ws.onopen = function (event) {
+    console.log("Web Socket connected!");
+    //console.log("Sending message by Web Socket!");
+    ws.send(doThing());
+    interval = setInterval(function(){
+      //console.log("Sending message by Web Socket!");
+      ws.send(doThing());
+    }, 1*1000);
+  };
+  ws.onclose = function () {
+    console.log("Web Socket closed!");
+  };
+  function doThing() {
+    return 1;
+  }
+</script>

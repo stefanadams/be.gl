@@ -10,8 +10,25 @@ h3 {margin-bottom:.5em; }
 #code {background-color: lightgreen}
 //div {padding:.5em;margin:.5em;display:inline;align-vertical:bottom;height:100px}
 .inline {display:inline}
-.link {padding:.5em;margin:.5em;font-size:40px;align-vertical:bottom}
+.link {padding:.5em;margin:.5em;font-size:100px;align-vertical:bottom;}
 .navbar {margin:0}
 img {max-width:none;}
 hr {margin:5px 0}
+
+html, body, #map-canvas {
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    border: 1px solid #999;
+}
+#panel {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    margin-left: -180px;
+    z-index: 5;
+    background-color: #fff;
+    padding: 5px;
+    border: 1px solid #999;
+}
 

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>be.gl</title>
+    <link href="style.css" rel="stylesheet">
+    %= asset 'begl.js'
+    <script src="//maps.googleapis.com/maps/api/js?key=AIzaSyDKw1I9ZlI-piCBp2zXSuviBDVRjju-aYI&sensor=true"></script>
+    <script>
+      % my $ws = url_for 'ducks';
+      var ws = new WebSocket('wss://be-gl-s1037989.c9.io/ducks');
+    </script>
+  </head>
+  <body>
+
+    <img src="/beagle.jpg" />
+    Code: <%= session 'code' %>
+    <div id="googlemaps"></div>
+
+  </body>
+</html>

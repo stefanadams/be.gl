@@ -11,16 +11,24 @@ function initialize() {
   }); 
 
 	if (geoPosition.init()) {
-	   geoPosition.getCurrentPosition(locationFound, null, {enableHighAccuracy:true});
+	   geoPosition.getCurrentPosition(gmap, null, {enableHighAccuracy:true});
   }
 }
 
-function gmap(lat, lng) {
+function gmap(position) {
+  var lat = position.coords.latitude.toFixed(5);
+  var lng = position.coords.longitude.toFixed(5);
   $('#map').attr('href', "https://www.google.com/maps/place/"+lat+","+lng+"/\@"+lat+","+lng+",15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0").html(lat + ', ' + lng);
   showMap(lat, lng);
 }
       
 function showMap(lat, lng) {
+  ws.onmessage = function (event) { console.log(event.data);  };
+  ws.onopen    = function (event) {
+    ws.send(JSON.stringify([lat, lng]));
+    setInterval(function() { ws.send(JSON.stringify([lat, lng])); }, 1*1000);
+  };
+
   latLng = new google.maps.LatLng(lat, lng);
   map.setCenter(latLng);
   marker = new google.maps.Marker({
