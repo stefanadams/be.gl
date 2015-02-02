@@ -1,17 +1,16 @@
-* {
-    list-style: none;
-}
-
 body {
     color: #744d29;
     font-family: 'Muli', serif;
+    font-size: 12px;
 }
 
 html, body, .main-wrapper, #map-canvas {
     height: 100%;
     margin: 0px;
-    padding: 0px
+    padding: 0px;
+    position: relative;
 }
+
       
 #map-canvas {
     width: 100%;
@@ -49,37 +48,37 @@ html, body, .main-wrapper, #map-canvas {
 h1 {
     color: #744d29;
     font-family: 'Dosis', sans-serif;
-    font-size: 2em;
+    font-size: 3em;
+    position: absolute;
+    top: -15px;
+    margin-bottom: 10px;
+    letter-spacing: .1em;
+    font-weight: 700;
 }
 
 h2 {
     color: #744d29;
     font-family: 'Muli', serif;
-    font-size: .6em;
-}
-
-h3 {
-    margin: 0px;
+    font-size: 1rem;
 }
 
 a {
     text-decoration: none;
-    color: #744D29;
+    color: #FBEA11;
 }
 
-/* LAYOUTS
+/* MAIN LAYOUTS & STYLES
 =================================  */
 
 .header{
     background-color: #FC923B;
     padding: 10px;
-    border-bottom: solid 3px #744d29;
-    max-height: 80px;
+    border-bottom: solid 2px #744d29;
+    position: relative;
 }
 
-.total-logo{
+.inline{
     display: inline-block;
-    width: 50%;
 }
 
 .right{
@@ -96,15 +95,34 @@ a {
     margin-right: auto;
 }
 
+.container{
+    position: relative;
+    height: 200px;
+}
 
 .button{
     display: block;
 }
 
+.tagline {
+    position: absolute;
+    top: 30px;
+}
+
 .private-code{
     background-color: #F8A541;
-    padding: 10px 0px;
+    padding: 3px 0px;
     max-height: 30px;
+    position: relative;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}
+
+.private-code::last{
+    margin-top: 0;
 }
 
 #googlemaps{
@@ -114,28 +132,29 @@ a {
 
 .footer{
     background-color: #FC923B;
-    border-top: solid 3px #744d29;
+    border-top: solid 2px #744d29;
     position: fixed;
     bottom: 0;
     width: 100%;
-    padding: 5px 10px;
+    box-sizing: border-box;
+    padding: 5px;
+    padding-bottom: 0px;
 }
 
-.beagle{
-    /*background-color: blue;*/
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-.sniff{
-    /*background-color: green;*/
+.bar{
     margin-top: 0;
     margin-bottom: 0;
 }
 
 .nav, .nav li{
     display: inline-block;
-    margin-right: 10px;
+    margin-top: 0;
+    list-style: none;
+}
+
+.main-content {
+    width: 90%;
+    max-width: 600px;
 }
 
 /* CLEARFIX
@@ -148,12 +167,3 @@ a {
 
 /* MEDIA QUERIES
 ================================= */
-@media (min-width: 500px) {
-    h1 {font-size: 2.8em;}
-    h2 {font-size: .8em;}
-}
-
-@media (min-width: 700px) {
-    h1 {font-size: 3.2em;}
-    h2 {font-size: 1em;}
-}
