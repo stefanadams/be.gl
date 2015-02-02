@@ -6,7 +6,6 @@
         <title>be.gl map and location services</title>
         <link href='//fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
         <link href='//fonts.googleapis.com/css?family=Dosis:500,600' rel='stylesheet' type='text/css'>
-        <meta name="viewport" content="width=device-width">
         %= asset 'begl.css'
         <script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
         %= asset 'begl.js'
@@ -155,22 +154,28 @@
     <body>
        <div class="main-wrapper">
         <div class="header group">
-            <img src="img/bgl-graphic-sm.png" class="logo right"/>
+
+            <img src="img/beagle-small.png" class="logo right"/>
             <h1>beagle</h1>
             <h2 class="tagline">sniff out your pals</h2>
         </div>
-        <h3 class="private-code center">My private pal code: <a id="code" href="/c0d3"><%= session 'code' %></a></h3> 
-        <p class="private-code center">Right now, <%= '$beagles' %> are active.</p>
-        <div id="map-canvas"></div>
-        <div class="footer bar group">
+        <div class="main-content center">
+            <h2>What Is Beagle?</h2>
+            <p>Sharing your location with anyone at any time is hard. <a href="index.html.ep">be.gl</a> exists to make it 
+            easy to share your location with anyone. You don't have to create an account, or login, 
+            or friend anyone first. Looking for some more help on how this all works? Check out our 
+            <a href="help.html.ep">help page</a> for more guidance.</p>
+            <h2>Get in Touch</h2>
+            <p>We'd love to hear from you! You can track us down at <a href="email:howl@be.gl">howl@be.gl</a></p>
+        </div>
+        <div class="footer group">
             <ul class="nav right">
-                <li class="center"><a href="about.html"><img src="img/about-icon.svg" class="button center"/></a><a href="/about.html">about</a></li>
-                <li class="center"><a href="help.html"><img src="img/help-icon.svg" class="button center"/></a><a href="/help.html">help</a></li>
+                <li class="center"><img src="img/about-button.png" class="button center"/><a href="#">about</a></li>
+                <li class="center"><img src="img/help-button.png" class="button center"/><a href="#">help</a></li>
             </ul>
-            <div class="left">
-              <p>&copy; 2015</p>
-              <p><a href="privacy.html.ep">privacy policy</a></p>
-            </div>
+            <p>&copy; 2015</p>
+            <a href="privacy.html.ep">Privacy policy</a>
+            <p class="center"><%= '$beagles' %> sniffing out their pals</p>
         </div>
         </div>
     </body>

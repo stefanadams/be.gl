@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="38px" height="38px" viewBox="0 0 38 38" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>about icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Elements" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="UI-Kit" sketch:type="MSArtboardGroup" transform="translate(-1084.000000, -870.000000)">
+            <g id="footer-bar" sketch:type="MSLayerGroup" transform="translate(916.000000, 864.000000)">
+                <g id="about-icon" transform="translate(169.000000, 7.000000)" sketch:type="MSShapeGroup">
+                    <circle id="Icon-4" stroke="#744D29" fill="#79BC34" cx="18" cy="18" r="18"></circle>
+                    <g id="person" transform="translate(6.923077, 5.538462)" fill="#FBEA11">
+                        <circle id="Oval-5" cx="10.7307692" cy="6.57692308" r="6.57692308"></circle>
+                        <path d="M2.02576074,17.775924 C2.4363679,15.6055719 4.53097007,13.5003286 6.6950771,13.1011571 C6.6950771,13.1011571 9.56466288,12.4615385 11.4232377,12.4615385 C13.4864399,12.4615385 16.163813,13.0890268 16.163813,13.0890268 C18.324964,13.5071765 20.3175791,15.6270086 20.6126964,17.8108763 L21.8076923,26.6538462 C21.8076923,26.6538462 19.9464946,28.092791 17.3076923,29.0769231 C15.4426861,29.7724706 12.9843078,30.1153846 11.423238,30.1153846 C9.87249504,30.1153846 7.05168575,29.864529 4.84615384,29.0769231 C2.23879804,28.145824 0.346153838,26.6538462 0.346153838,26.6538462 L2.02576074,17.775924 Z" id="Rectangle-14"></path>
+                    </g>
+                    <path d="M25.1624821,33.5909768 L23.991364,23.8705617" id="Line-2" stroke="#79BC34" stroke-linecap="square"></path>
+                    <path d="M10.7307692,33.5769231 L12.1153846,23.8846154" id="Line" stroke="#79BC34" stroke-linecap="square"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
