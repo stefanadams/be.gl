@@ -1,0 +1,10 @@
+<div class="footer bar group">
+    <ul class="nav right">
+        <li class="center"><a href="<%= url_for 'about' %>"><img src="img/about-icon.svg" class="button center"/></a><a href="<%= url_for 'about' %>">about</a></li>
+        <li class="center"><a href="<%= url_for 'help' %>"><img src="img/help-icon.svg" class="button center"/></a><a href="<%= url_for 'help' %>">help</a></li>
+    </ul>
+    <div class="left">
+      <p>&copy; 2015</p>
+      <p><a href="<%= url_for 'privacy' %>">privacy policy</a></p>
+    </div>
+</div>
