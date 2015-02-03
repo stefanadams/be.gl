@@ -24,7 +24,7 @@ helper pal_name => sub {
   return $ll => $pal_name;
 };
 
-sub code { substr(md5_hex(scalar localtime),int(rand(32-$_[0])),$_[0]) }
+helper code => sub { substr(md5_hex(scalar localtime),int(rand(32-$_[0])),$_[0]) };
 
 if ( $ENV{REDIS_CLEAR} ) {
   app->log->info("Clearing redis");
@@ -34,7 +34,7 @@ if ( $ENV{REDIS_CLEAR} ) {
 get '/' => sub {
   my $c = shift;
   my $length = 3;
-  $c->session(code => code(3)) unless $c->session('code');
+  $c->session(code => $c->code(3)) unless $c->session('code');
   $c->render;
 } => 'index';
 get '/about';
