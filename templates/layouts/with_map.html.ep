@@ -47,11 +47,12 @@
     						position: ll,
     						icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
     						map: beglmap,
-    						zIndex: 0,
+    						zIndex: 0/*,
     						labelContent: "<%= session 'code' %>",
     						labelClass: "labels-me",
     						labelAnchor: new google.maps.Point(22,0),
     						labelStyle: {opacity:1.0}
+    						*/
     					});
             });
           }
