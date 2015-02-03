@@ -67,6 +67,7 @@ websocket '/pals' => => sub {
   });
   $c->on(message => sub {
     my ($c, $msg) = @_;
+    warn $msg;
     return $c->send(1) if $msg eq '1';
     $code or return $c->send({json => {}});
     if( my $json = j($msg) ) {
