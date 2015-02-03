@@ -44,6 +44,10 @@ html, body, .main-wrapper, #map-canvas {
       
 /* FONT STYLES
 ================================= */
+a {
+    text-decoration: none;
+    color: #FBEA11;
+}
 
 h1 {
     color: #744d29;
@@ -62,11 +66,6 @@ h2 {
     font-size: 1rem;
 }
 
-a {
-    text-decoration: none;
-    color: #FBEA11;
-}
-
 /* MAIN LAYOUTS & STYLES
 =================================  */
 
@@ -75,6 +74,10 @@ a {
     padding: 10px;
     border-bottom: solid 2px #744d29;
     position: relative;
+}
+
+.title {
+    color: #744d29;
 }
 
 .inline{
@@ -106,7 +109,7 @@ a {
 
 .tagline {
     position: absolute;
-    top: 30px;
+    top: 45px;
 }
 
 .private-code{
@@ -155,6 +158,8 @@ a {
 .main-content {
     width: 90%;
     max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* CLEARFIX
@@ -167,3 +172,13 @@ a {
 
 /* MEDIA QUERIES
 ================================= */
+@media (min-width: 780px) {
+  body {
+    font-size: 16px;
+  }
+
+.tagline {
+    position: absolute;
+    top: px;
+  }
+}

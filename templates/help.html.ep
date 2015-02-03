@@ -1,208 +1,37 @@
-<!DOCTYPE html>
+% layout 'without_map';
 
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>be.gl map and location services</title>
-        <link href='//fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
-        <link href='//fonts.googleapis.com/css?family=Dosis:500,600' rel='stylesheet' type='text/css'>
-        %= asset 'begl.css'
-        <script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
-        %= asset 'begl.js'
-        <script>
-          var beglmap;
-          var pals = [];
-          var me;
-          var interval = 0;
-          var ws = new ReconnectingWebSocket('wss://be-gl-s1037989.c9.io/pals');
-          var geo_options = {enableHighAccuracy: true, maximumAge: 30000, timeout: 27000};
-    
-          function getLatLng(position){
-            var lat = 0.0000;
-            var lng = 0.0000;
-            if ( position ) {
-              if ( typeof position === 'object' && "coords" in position ) {
-                //lat = position.coords.latitude+Math.random(); lat = lat.toFixed(4);
-                //lng = position.coords.longitude-Math.random(); lng = lng.toFixed(4);
-                lat = position.coords.latitude.toFixed(4);
-                lng = position.coords.longitude.toFixed(4);
-              } else if ( typeof position === 'string' ) {
-                var ll = position.split(",");
-                lat = ll[0];
-                lng = ll[1];
-              }
-            }
-            var ll = {lat: parseFloat(lat), lng: parseFloat(lng)};
-            //console.log(ll);
-            return ll;
-          }
-          function initialize() {
-            navigator.geolocation.getCurrentPosition(function(position) {
-              var ll = getLatLng(position)
-              beglmap = new google.maps.Map(document.getElementById('map-canvas'), {zoom: 12, center: ll});
-    					me = new MarkerWithLabel({
-    					  draggable: true,
-    					  clickable: true,
-    						position: ll,
-    						icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-    						map: beglmap,
-    						zIndex: 0,
-    						labelContent: "<%= session 'code' %>",
-    						labelClass: "labels-me",
-    						labelAnchor: new google.maps.Point(22,0),
-    						labelStyle: {opacity:1.0}
-    					});
-            });
-          }
-    
-          ws.onopen = function (event) {
-            console.log("Web Socket Open!");
-            navigator.geolocation.getCurrentPosition(function(position) {
-              ws.send(JSON.stringify(getLatLng(position)));
-            });
-            interval = setInterval(function(){
-              ws.send(1);
-              navigator.geolocation.getCurrentPosition(function(position) {
-                var ll = getLatLng(position);
-                //beglmap.setCenter(ll);
-                me.setPosition(ll);
-                me.setZIndex(0);
-                ws.send(JSON.stringify(ll));
-              });
-            }, 5 * 1000);
-            // Every now and then refresh the full list of markers
-          };
-          ws.onerror = function () {
-            console.log("Web Socket Error!");
-          };
-          ws.onclose = function () {
-            console.log("Web Socket Close!");
-            window.clearInterval(interval);
-            for (var pal in pals) {
-              pals[pal].setMap(null);
-              delete pals[pal];
-            }
-          };
-          ws.onmessage = function (event) {
-            if ( event.data == '1' ) return;
-            var js = JSON.parse(event.data);
-            //console.log(js);
-            if ( js.del ) {
-              for (var pal in js.del) {
-                console.log("Del: "+js.del[pal], getLatLng(pal));
-                if ( pal in pals ) {
-                  pals[pal].setMap(null);
-                  delete pals[pal];
-                }
-              }
-            }
-            if ( js.add ) {
-              for (var pal in js.add) {
-                var ll = getLatLng(pal);
-                console.log("Add: "+js.add[pal], ll);
-                var color = 'red';
-                if ( js.add[pal] != pal ) {
-                  color = 'yellow';
-        					pals[pal] = new MarkerWithLabel({
-        						position: ll,
-        						icon: "https://maps.google.com/mapfiles/ms/icons/"+color+"-dot.png",
-        						map: beglmap,
-        						zIndex: 1,
-        						url: "https://www.google.com/maps/place/"+ll.lat+","+ll.lng+"/\@"+ll.lat+","+ll.lng+",15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0",
-        						labelContent: js.add[pal],
-        						labelClass: "labels-pal",
-        						labelAnchor: new google.maps.Point(22,0),
-        						labelStyle: {opacity:1.0}
-        					});
-                } else {
-      					  pals[pal] = new google.maps.Marker({
-                    position: ll,
-                    icon: "https://maps.google.com/mapfiles/ms/icons/"+color+"-dot.png",
-        						url: "https://www.google.com/maps/place/"+ll.lat+","+ll.lng+"/\@"+ll.lat+","+ll.lng+",15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0",
-                    map: beglmap
-                  });
-                }
-                google.maps.event.addListener(pals[pal], 'click', function (e) {
-                  window.location.href = this.url;
-                });
-              }
-            }
-          };
-    
-          if ("geolocation" in navigator) {
-            console.log("/* geolocation is available */");
-            google.maps.event.addDomListener(window, 'load', initialize);
-          } else {
-            console.log("/* geolocation IS NOT available */");
-          }
-    
-          $(function(){
-            $('#addpal').click(function(){
-              console.log("Add pal");
-              if ( $('#pal_code').val() ) {
-                console.log("Adding pal: "+$('#pal_code').val());
-                $.post('/addpal', {code: $('#pal_code').val(), name: $('#pal_name').val()}, function(data){
-                  $('#pal_code').val('');
-                  $('#pal_name').val('');
-                });
-              }
-            });
-          });
-        </script>
-    </head>
-    
-    <body>
-       <div class="main-wrapper">
-        <div class="header group">
-
-            <img src="img/beagle-small.png" class="logo right"/>
-            <h1>beagle</h1>
-            <h2 class="tagline">sniff out your pals</h2>
-        </div>
-        <div class="main-content">
-        <!-- ALL COMMENTED OUT CONTENT WILL BE ADDED BACK IN WHEN THE ADD PAL FEATURE IS RELEASED -->
-            <h2>Welcome to beagle</h2>
-            <p>Beagle makes it easy to find and navigate to someone else's location.
-            Simply open <a href="http://be.gl"></a>http://be.gl</a> on your browser and ask 
-            your pal to do the same. When you both have your browsers open to the beagle
-            home page, you'll see markers for both of your locations.</p>
-            <p>No accounts, no usernames, no logins, no hassle! Just open the page, sniff out
-            your pals, and close it when you're done.</p>
-            <!--<h2>Take Our Tour</h2>
-            <p>Looking for a quick demo of how to use beagle? You can take a quick <a href="#">tour</a> at any time.</p> -->
-            <h2>Sniff Out the Facts</h2>
-            <h3>What do the colored markers represent?</h3>
-            <p>The green marker is you. The red markers are other people who also happen to be on be.gl right now.
-            Want to see the location of a specific person? Ask them to navigate to <a href="http://be.gl"></a>http://be.gl</a>
-            and you'll see their marker right away. <!--Yellow markers are your pals.--></p>
-            <!--<h3>What's a pal?</h3>
-            <p>A pal is someone you know, who has provided you with their private pal code. Once you have their code, you can also give them a name and then you'll have a clear label marking their location each time you load the page.</p>
-            <h3>Does that mean I can see my pals all the time?</h3>
-            <p>Nope. We're all about security here. The only way you can see anyone - even pals - is if they have a be.gl page open and active in their browser.</p>
-            <h3>I changed my mind about sharing my code with someone. Can I revoke it?</h3>
-            <p>Not right now, but we're working on it.</p> -->
-            <h3>Who can see me?</h3>
-            <p>As long as you have be.gl open in your browser, anyone else who also has be.gl loaded in their browser can see a marker that represents you.</p>
-            <p>You will not be tracked unless the be.gl site is loaded and active. To stop being tracked, just close the page. Markers are cleared after 3 minutes of inactivity.</p>
-            <h3>Will strangers know who I am?</h3>
-            <p>Nope. The only way someone can know who you are is if you provide them with your private pal code.</p>
-            <p>All red markers are anonymous beagles. There's no way to know their code unless they tell it to you.</p>
-            <h3>How do I navigate to someone?</h3>
-            <p>You can navigate to anyone <!-- (pals or anonymous beagles) -->by clicking on their marker.</p>
-            <h3>Can I navigate to myself?</h3>
-            <p>No, you can't. We assume you already know where you are. (*If you're trying to find yourself, we recommend finding a beach or some mountains.)</p>
-            <h3>Is this site safe?</h3>
-            <p>Absolutely. Check out our <a href="privacy.html.ep">privacy policy</a> for all the details.</p>
-        </div>
-        <div class="footer group">
-            <ul class="nav right">
-                <li class="center"><img src="img/about-button.png" class="button center"/><a href="#">about</a></li>
-                <li class="center"><img src="img/help-button.png" class="button center"/><a href="#">help</a></li>
-            </ul>
-            <p>&copy; 2015</p>
-            <a href="privacy.html.ep">Privacy policy</a>
-            <p class="center"><%= '$beagles' %> sniffing out their pals</p>
-        </div>
-        </div>
-    </body>
-</html>
+<div class="main-content">
+<!-- ALL COMMENTED OUT CONTENT WILL BE ADDED BACK IN WHEN THE ADD PAL FEATURE IS RELEASED -->
+    <h2>Welcome to beagle</h2>
+    <p>Beagle makes it easy to find and navigate to someone else's location.
+    Simply open <a href="<%= url_for 'index' %>"></a>http://be.gl</a> on your browser and ask 
+    your pal to do the same. When you both have your browsers open to the beagle
+    home page, you'll see markers for both of your locations.</p>
+    <p>No accounts, no usernames, no logins, no hassle! Just open the page, sniff out
+    your pals, and close it when you're done.</p>
+    <!--<h2>Take Our Tour</h2>
+    <p>Looking for a quick demo of how to use beagle? You can take a quick <a href="#">tour</a> at any time.</p> -->
+    <h2>Sniff Out the Facts</h2>
+    <h3>What do the colored markers represent?</h3>
+    <p>The green marker is you. The red markers are other people who also happen to be on be.gl right now.
+    Want to see the location of a specific person? Ask them to navigate to <a href="<%= url_for 'index' %>"></a>http://be.gl</a>
+    and you'll see their marker right away. <!--Yellow markers are your pals.--></p>
+    <!--<h3>What's a pal?</h3>
+    <p>A pal is someone you know, who has provided you with their private pal code. Once you have their code, you can also give them a name and then you'll have a clear label marking their location each time you load the page.</p>
+    <h3>Does that mean I can see my pals all the time?</h3>
+    <p>Nope. We're all about security here. The only way you can see anyone - even pals - is if they have a be.gl page open and active in their browser.</p>
+    <h3>I changed my mind about sharing my code with someone. Can I revoke it?</h3>
+    <p>Not right now, but we're working on it.</p> -->
+    <h3>Who can see me?</h3>
+    <p>As long as you have be.gl open in your browser, anyone else who also has be.gl loaded in their browser can see a marker that represents you.</p>
+    <p>You will not be tracked unless the be.gl site is loaded and active. To stop being tracked, just close the page. Markers are cleared after 3 minutes of inactivity.</p>
+    <h3>Will strangers know who I am?</h3>
+    <p>Nope. The only way someone can know who you are is if you provide them with your private pal code.</p>
+    <p>All red markers are anonymous beagles. There's no way to know their code unless they tell it to you.</p>
+    <h3>How do I navigate to someone?</h3>
+    <p>You can navigate to anyone <!-- (pals or anonymous beagles) -->by clicking on their marker.</p>
+    <h3>Can I navigate to myself?</h3>
+    <p>No, you can't. We assume you already know where you are. (*If you're trying to find yourself, we recommend finding a beach or some mountains.)</p>
+    <h3>Is this site safe?</h3>
+    <p>Absolutely. Check out our <a href="<%= url_for 'privacy' %>">privacy policy</a> for all the details.</p>
+</div>
