@@ -20,7 +20,7 @@
           % } else {
           % my $ws_url = url_for 'pals';
           var ws = new ReconnectingWebSocket("<%= $ws_url->to_abs %>");
-          }
+          % }
           var geo_options = {enableHighAccuracy: true, maximumAge: 30000, timeout: 27000};
     
           function getLatLng(position){
