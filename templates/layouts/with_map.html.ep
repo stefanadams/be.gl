@@ -173,8 +173,10 @@
     <body>
       <div class="main-wrapper">
           %= include 'beagle_header';
-          %# <h3 class="private-code center">My private pal code: <a id="code" href="/c0d3"><%= session 'code' %></a></h3> 
-          <p class="private-code center">Right now, <span id="beagles">0 other beagles are</span> active.</p>
+          <div id="private-code">
+            %# <h3 class="private-code center">My private pal code: <a id="code" href="/c0d3"><%= session 'code' %></a></h3> 
+            <p class="private-code center">Right now, <span id="beagles">0 other beagles are</span> active.</p>
+          </div>
           <%= content %>
           %= include 'beagle_footer';
       </div>

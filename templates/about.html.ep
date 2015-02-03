@@ -1,6 +1,6 @@
 % layout 'without_map';
 
-<div class="main-content center">
+<div class="main-content">
     <h2>What Is Beagle?</h2>
     <p>Sharing your location with anyone at any time is hard. <a href="<%= url_for 'index' %>">be.gl</a> exists to make it 
     easy to share your location with anyone. You don't have to create an account, or login, 

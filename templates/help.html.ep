@@ -2,7 +2,7 @@
 
 <div class="main-content">
 <!-- ALL COMMENTED OUT CONTENT WILL BE ADDED BACK IN WHEN THE ADD PAL FEATURE IS RELEASED -->
-    <h2>Welcome to beagle</h2>
+    <h3>Welcome to beagle</h3>
     <p>Beagle makes it easy to find and navigate to someone else's location.
     Simply open <a href="<%= url_for 'index' %>"></a>http://be.gl</a> on your browser and ask 
     your pal to do the same. When you both have your browsers open to the beagle
@@ -11,8 +11,8 @@
     your pals, and close it when you're done.</p>
     <!--<h2>Take Our Tour</h2>
     <p>Looking for a quick demo of how to use beagle? You can take a quick <a href="#">tour</a> at any time.</p> -->
-    <h2>Sniff Out the Facts</h2>
-    <h3>What do the colored markers represent?</h3>
+    <h3>Sniff Out the Facts</h3>
+    <h2>What do the colored markers represent?</h2>
     <p>The green marker is you. The red markers are other people who also happen to be on be.gl right now.
     Want to see the location of a specific person? Ask them to navigate to <a href="<%= url_for 'index' %>"></a>http://be.gl</a>
     and you'll see their marker right away. <!--Yellow markers are your pals.--></p>
@@ -22,16 +22,17 @@
     <p>Nope. We're all about security here. The only way you can see anyone - even pals - is if they have a be.gl page open and active in their browser.</p>
     <h3>I changed my mind about sharing my code with someone. Can I revoke it?</h3>
     <p>Not right now, but we're working on it.</p> -->
-    <h3>Who can see me?</h3>
+    <h2>Who can see me?</h2>
     <p>As long as you have be.gl open in your browser, anyone else who also has be.gl loaded in their browser can see a marker that represents you.</p>
     <p>You will not be tracked unless the be.gl site is loaded and active. To stop being tracked, just close the page. Markers are cleared after 3 minutes of inactivity.</p>
-    <h3>Will strangers know who I am?</h3>
+    <h2>Will strangers know who I am?</h2>
     <p>Nope. The only way someone can know who you are is if you provide them with your private pal code.</p>
     <p>All red markers are anonymous beagles. There's no way to know their code unless they tell it to you.</p>
-    <h3>How do I navigate to someone?</h3>
+    <h2>How do I navigate to someone?</h2>
     <p>You can navigate to anyone <!-- (pals or anonymous beagles) -->by clicking on their marker.</p>
-    <h3>Can I navigate to myself?</h3>
+    <h2>Can I navigate to myself?</h2>
     <p>No, you can't. We assume you already know where you are. (*If you're trying to find yourself, we recommend finding a beach or some mountains.)</p>
-    <h3>Is this site safe?</h3>
+    <h2>Is this site safe?</h2>
     <p>Absolutely. Check out our <a href="<%= url_for 'privacy' %>">privacy policy</a> for all the details.</p>
+    <div class="extra-space"></div>
 </div>

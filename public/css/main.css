@@ -73,7 +73,10 @@ h2 {
     background-color: #FC923B;
     padding: 10px;
     border-bottom: solid 2px #744d29;
-    position: relative;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 100;
 }
 
 .title {
@@ -112,6 +115,10 @@ h2 {
     top: 45px;
 }
 
+.logo {
+    padding-right: 20px;
+}
+
 .private-code{
     background-color: #F8A541;
     padding: 3px 0px;
@@ -126,6 +133,14 @@ h2 {
 
 .private-code::last{
     margin-top: 0;
+}
+
+#private-code{
+    padding-top: 90px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 100;
 }
 
 #googlemaps{
@@ -160,7 +175,18 @@ h2 {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+    padding-top: 100px;
 }
+
+.main-content a {
+    color: #FC923B;
+    
+}
+
+.extra-space {
+    padding-top: 90px;
+}
+
 
 /* CLEARFIX
 =================================  */
@@ -176,9 +202,9 @@ h2 {
   body {
     font-size: 16px;
   }
-
-.tagline {
-    position: absolute;
-    top: px;
+  
+  h1 {
+      font-size: 2.25em;
   }
+
 }
