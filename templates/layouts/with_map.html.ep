@@ -15,7 +15,7 @@
           var pals = [];
           var me;
           var interval = 0;
-          var ws = new ReconnectingWebSocket('wss://be-gl-s1037989.c9.io/pals');
+          var ws = new ReconnectingWebSocket('ws://be.gl/pals');
           var geo_options = {enableHighAccuracy: true, maximumAge: 30000, timeout: 27000};
     
           function getLatLng(position){
