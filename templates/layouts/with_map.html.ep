@@ -39,7 +39,7 @@
           }
           function initialize() {
             navigator.geolocation.getCurrentPosition(function(position) {
-              var ll = getLatLng(position)
+              var ll = getLatLng(position);
               beglmap = new google.maps.Map(document.getElementById('map-canvas'), {zoom: 12, center: ll});
     					me = new MarkerWithLabel({
     					  draggable: true,
