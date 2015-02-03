@@ -88,15 +88,6 @@ websocket '/pals' => => sub {
   });
 };
 
-#use Math::BigFloat;
-#Math::BigFloat->precision(-3);
-#Mojo::IOLoop->recurring(3 => sub {
-#  my $redis = app->redis;
-#  my $r = code(1);
-#  $redis->setex("pals.$r" => 5 => j([38+Math::BigFloat->new(rand()), -90-Math::BigFloat->new(rand())]));
-#  #warn "$r: ".$redis->get("pals.$r");
-#});
-
 app->start;
 
 __END__
