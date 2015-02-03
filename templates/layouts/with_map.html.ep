@@ -167,7 +167,7 @@
             <h2 class="tagline">sniff out your pals</h2>
         </div>
         %# <h3 class="private-code center">My private pal code: <a id="code" href="/c0d3"><%= session 'code' %></a></h3> 
-        <p class="private-code center">Right now, <span id="beagles">... are</span> active.</p>
+        <p class="private-code center">Right now, <span id="beagles">0 other beagles are</span> active.</p>
         <%= content %>
         <div class="footer bar group">
             <ul class="nav right">
