@@ -35,7 +35,7 @@ get '/' => sub {
   my $c = shift;
   my $length = 3;
   $c->session(code => code(3)) unless $c->session('code');
-  $c->render(beagles => $#{$c->redis->keys('pals.*')});
+  $c->render;
 } => 'index';
 get '/about';
 get '/help';
@@ -79,7 +79,7 @@ websocket '/pals' => => sub {
     $pals->{$code}->{last} = $pals->{$code}->{this} if $pals->{$code}->{this};
     $pals->{$code}->{this} = {map { $c->pal_name($_ => j($redis->get("pals.$_"))) } grep { $_ ne $code } map { s/^pals\.//; $_ } @{$redis->keys('pals.*')}};
     my $diff = {
-      beagles => scalar @{$redis->keys('pals.*')},
+      beagles => $#{$redis->keys('pals.*')},
       add => left_diff(map { $pals->{$code}->{$_} } qw/this last/),
       del => left_diff(map { $pals->{$code}->{$_} } qw/last this/),
     };

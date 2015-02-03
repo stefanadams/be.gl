@@ -88,8 +88,12 @@
             if ( event.data == '1' ) return;
             var js = JSON.parse(event.data);
             //console.log(js);
-            if ( js.beagles ) {
-              $('span#beagles').html(js.beagles);
+            if ( 'beagles' in js ) {
+              if ( js.beagles == 1 ) {
+                $('span#beagles').html(js.beagles+' other beagle is');
+              } else {
+                $('span#beagles').html(js.beagles+' other beagles are');
+              }
             }
             if ( js.del ) {
               for (var pal in js.del) {
@@ -162,8 +166,8 @@
             <h1>beagle</h1>
             <h2 class="tagline">sniff out your pals</h2>
         </div>
-        <h3 class="private-code center">My private pal code: <a id="code" href="/c0d3"><%= session 'code' %></a></h3> 
-        <p class="private-code center">Right now, <span id="beagles"><%= $beagles %></span> are active.</p>
+        %# <h3 class="private-code center">My private pal code: <a id="code" href="/c0d3"><%= session 'code' %></a></h3> 
+        <p class="private-code center">Right now, <span id="beagles">... are</span> active.</p>
         <%= content %>
         <div class="footer bar group">
             <ul class="nav right">
