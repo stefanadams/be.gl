@@ -16,7 +16,7 @@
           var me;
           var interval = 0;
           % if ( -d '.c9' ) {
-          var ws = new ReconnectingWebSocket("ws://be-gl-s1037989.c9.io/pals");
+          var ws = new ReconnectingWebSocket("wss://be-gl-s1037989.c9.io/pals");
           % } else {
           % my $ws_url = url_for 'pals';
           var ws = new ReconnectingWebSocket("<%= $ws_url->to_abs %>");
