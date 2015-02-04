@@ -28,5 +28,4 @@
             %= include 'beagle_footer';
         </div>
     </body>
-    
 </html>
