@@ -15,17 +15,21 @@
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
           })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-        
+
           ga('create', 'UA-59296200-1', 'auto');
           ga('send', 'pageview');
-        
         </script>
         <script>
           var beglmap;
           var pals = [];
           var me;
           var interval = 0;
-          var ws = new ReconnectingWebSocket('wss://be-gl-s1037989.c9.io/pals');
+          % if ( -d '.c9' ) {
+          var ws = new ReconnectingWebSocket("wss://be-gl-s1037989.c9.io/pals");
+          % } else {
+          % my $ws_url = url_for 'pals';
+          var ws = new ReconnectingWebSocket("<%= $ws_url->to_abs %>");
+          % }
           var geo_options = {enableHighAccuracy: true, maximumAge: 30000, timeout: 27000};
     
           function getLatLng(position){
@@ -38,9 +42,9 @@
                 lat = position.coords.latitude.toFixed(4);
                 lng = position.coords.longitude.toFixed(4);
               } else if ( typeof position === 'string' ) {
-                var ll = position.split(",");
-                lat = ll[0];
-                lng = ll[1];
+                var ll1 = position.split(",");
+                lat = ll1[0];
+                lng = ll1[1];
               }
             }
             var ll = {lat: parseFloat(lat), lng: parseFloat(lng)};
@@ -49,7 +53,7 @@
           }
           function initialize() {
             navigator.geolocation.getCurrentPosition(function(position) {
-              var ll = getLatLng(position)
+              var ll = getLatLng(position);
               beglmap = new google.maps.Map(document.getElementById('map-canvas'), {zoom: 12, center: ll});
     					me = new MarkerWithLabel({
     					  draggable: true,
@@ -96,7 +100,7 @@
             }
           };
           ws.onmessage = function (event) {
-            if ( event.data == '1' ) return;
+            if ( event.data == '1' ) { return; }
             var js = JSON.parse(event.data);
             //console.log(js);
             if ( 'beagles' in js ) {
@@ -107,11 +111,11 @@
               }
             }
             if ( js.del ) {
-              for (var pal in js.del) {
-                console.log("Del: "+js.del[pal], getLatLng(pal));
-                if ( pal in pals ) {
-                  pals[pal].setMap(null);
-                  delete pals[pal];
+              for (var dpal in js.del) {
+                console.log("Del: "+js.del[dpal], getLatLng(dpal));
+                if ( dpal in pals ) {
+                  pals[dpal].setMap(null);
+                  delete pals[dpal];
                 }
               }
             }
