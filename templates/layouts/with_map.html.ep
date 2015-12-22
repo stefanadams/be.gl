@@ -76,8 +76,17 @@
             navigator.geolocation.getCurrentPosition(function(position) {
               ws.send(JSON.stringify(getLatLng(position)));
             });
+            navigator.geolocation.watchPosition(function(position) {
+              var ll = getLatLng(position);
+              me.setPosition(ll);
+              me.setZIndex(0);
+              ws.send(JSON.stringify(ll));
+            }, function(error) {
+              console.warn('ERROR(' + err.code + '): ' + err.message);
+            }, {enableHighAccuracy: false, timeout: 3000, maximumAge: 0});
             interval = setInterval(function(){
               ws.send(1);
+/*
               navigator.geolocation.getCurrentPosition(function(position) {
                 var ll = getLatLng(position);
                 //beglmap.setCenter(ll);
@@ -85,6 +94,7 @@
                 me.setZIndex(0);
                 ws.send(JSON.stringify(ll));
               });
+*/
             }, 5 * 1000);
             // Every now and then refresh the full list of markers
           };
