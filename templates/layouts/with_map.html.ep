@@ -20,89 +20,67 @@
           ga('send', 'pageview');
         </script>
         <script>
+          if (window.hyper && window.hyper.log) { console.log = hyper.log }
+
           var beglmap;
           var pals = [];
           var me;
           var interval = 0;
-          % if ( -d '.c9' ) {
-          var ws = new ReconnectingWebSocket("wss://be-gl-s1037989.c9.io/pals");
-          % } else {
-          % my $ws_url = url_for 'pals';
-          var ws = new ReconnectingWebSocket("<%= $ws_url->to_abs %>");
-          % }
-          var geo_options = {enableHighAccuracy: true, maximumAge: 30000, timeout: 27000};
-    
-          function getLatLng(position){
-            var lat = 0.0000;
-            var lng = 0.0000;
-            if ( position ) {
-              if ( typeof position === 'object' && "coords" in position ) {
-                //lat = position.coords.latitude+Math.random(); lat = lat.toFixed(4);
-                //lng = position.coords.longitude-Math.random(); lng = lng.toFixed(4);
-                lat = position.coords.latitude.toFixed(4);
-                lng = position.coords.longitude.toFixed(4);
-              } else if ( typeof position === 'string' ) {
-                var ll1 = position.split(",");
-                lat = ll1[0];
-                lng = ll1[1];
-              }
-            }
-            var ll = {lat: parseFloat(lat), lng: parseFloat(lng)};
-            //console.log(ll);
+          var curpos;
+          var tracking = 1;
+
+          function getLatLng (position) {
+            var ll = new google.maps.LatLng(position.coords.latitude.toFixed(4), position.coords.longitude.toFixed(4));
+            console.log(ll.toJSON());
             return ll;
           }
+          function splitLatLng (position) {
+            var ll = position.split(",");
+            lat = ll[0];
+            lng = ll[1];
+            return {coords: {latitude: parseFloat(ll[0]), longitude: parseFloat(ll[1])}};
+          }
+
           function initialize() {
             navigator.geolocation.getCurrentPosition(function(position) {
-              var ll = getLatLng(position);
-              beglmap = new google.maps.Map(document.getElementById('map-canvas'), {zoom: 12, center: ll});
-    					me = new MarkerWithLabel({
-    					  draggable: true,
-    					  clickable: true,
-    						position: ll,
-    						icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-    						map: beglmap,
-    						zIndex: 0/*,
-    						labelContent: "<%= session 'code' %>",
-    						labelClass: "labels-me",
-    						labelAnchor: new google.maps.Point(22,0),
-    						labelStyle: {opacity:1.0}
-    						*/
-    					});
+              curpos = getLatLng(position);
+              beglmap = new google.maps.Map(document.getElementById('map-canvas'), {zoom: 12, center: curpos});
+              google.maps.event.addListener(beglmap,'dragstart', function(event) {
+                tracking = 0; $('#autotrack').html('Resume Auto-track');
+              });
+              me = new MarkerWithLabel({
+                draggable: true,
+                clickable: true,
+                position: curpos,
+                icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                map: beglmap,
+                zIndex: 0/*,
+                labelContent: "<%= session 'code' %>",
+                labelClass: "labels-me",
+                labelAnchor: new google.maps.Point(22,0),
+                labelStyle: {opacity:1.0}
+                */
+              });
             });
           }
-    
+
+          % my $ws_url = url_for 'pals';
+          var ws = new ReconnectingWebSocket("<%= $ws_url->to_abs %>");
+
           ws.onopen = function (event) {
-            console.log("Web Socket Open!");
-            navigator.geolocation.getCurrentPosition(function(position) {
-              ws.send(JSON.stringify(getLatLng(position)));
-            });
+            interval = setInterval(function(){ws.send(1); if (curpos && tracking){beglmap.setCenter(curpos)}}, 5 * 1000);
             navigator.geolocation.watchPosition(function(position) {
-              var ll = getLatLng(position);
-              me.setPosition(ll);
+              curpos = getLatLng(position);
+              if ( tracking ) {
+                beglmap.setCenter(curpos);
+              }
+              me.setPosition(curpos);
               me.setZIndex(0);
-              ws.send(JSON.stringify(ll));
-            }, function(error) {
-              console.warn('ERROR(' + err.code + '): ' + err.message);
-            }, {enableHighAccuracy: false, timeout: 3000, maximumAge: 0});
-            interval = setInterval(function(){
-              ws.send(1);
-/*
-              navigator.geolocation.getCurrentPosition(function(position) {
-                var ll = getLatLng(position);
-                //beglmap.setCenter(ll);
-                me.setPosition(ll);
-                me.setZIndex(0);
-                ws.send(JSON.stringify(ll));
-              });
-*/
-            }, 5 * 1000);
+              ws.send(curpos.toUrlValue());
+            });
             // Every now and then refresh the full list of markers
           };
-          ws.onerror = function () {
-            console.log("Web Socket Error!");
-          };
           ws.onclose = function () {
-            console.log("Web Socket Close!");
             window.clearInterval(interval);
             for (var pal in pals) {
               pals[pal].setMap(null);
@@ -120,9 +98,10 @@
                 $('span#beagles').html(js.beagles+' other beagles are');
               }
             }
+            lastbeagles = js.beagles;
             if ( js.del ) {
               for (var dpal in js.del) {
-                console.log("Del: "+js.del[dpal], getLatLng(dpal));
+                console.log("Del: "+js.del[dpal], getLatLng(splitLatLng(dpal)).toString());
                 if ( dpal in pals ) {
                   pals[dpal].setMap(null);
                   delete pals[dpal];
@@ -130,28 +109,34 @@
               }
             }
             if ( js.add ) {
+              if ( Object.keys(js.add).length ) {
+                console.log("New beagle");
+                if ("vibrate" in navigator) {
+                  navigator.vibrate(500);
+                }
+              }
               for (var pal in js.add) {
-                var ll = getLatLng(pal);
-                console.log("Add: "+js.add[pal], ll);
+                var ll = getLatLng(splitLatLng(pal));
+                console.log("Add: "+js.add[pal], ll.toString());
                 var color = 'red';
                 if ( js.add[pal] != pal ) {
                   color = 'yellow';
-        					pals[pal] = new MarkerWithLabel({
-        						position: ll,
-        						icon: "https://maps.google.com/mapfiles/ms/icons/"+color+"-dot.png",
-        						map: beglmap,
-        						zIndex: 1,
-        						url: "https://www.google.com/maps/place/"+ll.lat+","+ll.lng+"/\@"+ll.lat+","+ll.lng+",15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0",
-        						labelContent: js.add[pal],
-        						labelClass: "labels-pal",
-        						labelAnchor: new google.maps.Point(22,0),
-        						labelStyle: {opacity:1.0}
-        					});
-                } else {
-      					  pals[pal] = new google.maps.Marker({
+                  pals[pal] = new MarkerWithLabel({
                     position: ll,
                     icon: "https://maps.google.com/mapfiles/ms/icons/"+color+"-dot.png",
-        						url: "https://www.google.com/maps/place/"+ll.lat+","+ll.lng+"/\@"+ll.lat+","+ll.lng+",15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0",
+                    map: beglmap,
+                    zIndex: 1,
+                    url: "https://www.google.com/maps/place/"+ll.lat+","+ll.lng+"/\@"+ll.lat+","+ll.lng+",15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0",
+                    labelContent: js.add[pal],
+                    labelClass: "labels-pal",
+                    labelAnchor: new google.maps.Point(22,0),
+                    labelStyle: {opacity:1.0}
+                  });
+                } else {
+                  pals[pal] = new google.maps.Marker({
+                    position: ll,
+                    icon: "https://maps.google.com/mapfiles/ms/icons/"+color+"-dot.png",
+                    url: "https://www.google.com/maps/place/"+ll.lat+","+ll.lng+"/\@"+ll.lat+","+ll.lng+",15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0",
                     map: beglmap
                   });
                 }
@@ -170,6 +155,7 @@
           }
     
           $(function(){
+            $('#autotrack').click(function(){tracking=1; if (curpos) { beglmap.setCenter(curpos); } $(this).html('Auto-tracking'); });
             $('#addpal').click(function(){
               console.log("Add pal");
               if ( $('#pal_code').val() ) {
@@ -188,8 +174,8 @@
       <div class="main-wrapper">
           %= include 'beagle_header';
           <div id="private-code">
-            %# <h3 class="private-code center">My private pal code: <a id="code" href="/c0d3"><%= session 'code' %></a></h3> 
-            <p class="private-code center">Right now, <span id="beagles">0 other beagles are</span> active.</p>
+            <h3 class="private-code center">My private pal code: <a id="code" href="/<%= session 'code' %>"><%= session 'code' %></a></h3> 
+            <p class="private-code center">Right now, <span id="beagles">0 other beagles are</span> active.  <span id="autotrack">Auto-tracking</span></p>
           </div>
           <%= content %>
           %= include 'beagle_footer';

@@ -13,8 +13,20 @@ app->asset('begl.js' => 'https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jque
 app->asset('begl.css' => 'css/normalize.css', 'css/main.css');
 app->sessions->default_expiration(86400*365*10);
 
+#app->hook(after_dispatch => sub { 
+#  my $c = shift; 
+#$c->app->log->info($c->req->url->to_abs." ".$c->session('code'));
+#  $c->res->headers->header('Access-Control-Allow-Origin' => '*'); 
+#  $c->res->headers->header('Access-Control-Max-Age' => '0'); 
+#  $c->res->headers->header('Access-Control-Allow-Credentials' => 'true'); 
+#  $c->res->headers->header('Set-Cookie' => 'test=test'); 
+#  $c->res->headers->header('Cache-Control' => 'no-cache'); 
+#  $c->res->headers->header('Expires' => 'Fri, 01 Jan 1990 00:00:00 GMT'); 
+#});
+
 our $pals = {};
 
+helper code => sub { substr(md5_hex(scalar localtime),int(rand(32-$_[1])),$_[1]) };
 helper redis => sub { shift->stash->{redis} ||= Mojo::Redis2->new; };
 helper pal_name => sub {
   my ($c, $pal, $ll) = @_;
@@ -24,8 +36,6 @@ helper pal_name => sub {
   warn "Pal ($ll): $pal_name" unless $pal_name eq $ll;
   return $ll => $pal_name;
 };
-
-helper code => sub { substr(md5_hex(scalar localtime),int(rand(32-$_[1])),$_[1]) };
 
 if ( $ENV{REDIS_CLEAR} ) {
   app->log->info("Clearing redis");
@@ -54,24 +64,25 @@ post '/addpal' => sub {
 
 websocket '/pals' => => sub {
   my $c = shift;
-  my $code = $c->session('code') or return;
   my $log = $c->app->log;
+  my $code = $c->session('code') or return;
   my $redis = $c->redis;
   $c->on(connection => sub {
     $code or return;
-    warn "CONNECT\n";
+  });
+  $c->on(error => sub {
+    $log->error("ERROR: $code");
   });
   $c->on(finish => sub {
     $code or return;
-    warn "FINISH\n";
     delete $pals->{$code};
   });
   $c->on(message => sub {
     my ($c, $msg) = @_;
-    $log->debug("$code : $msg");
     return $c->send(1) if $msg eq '1';
     $code or return $c->send({json => {}});
-    if( my $json = j($msg) ) {
+    my ($lat, $lng) = split /,/, $msg;
+    if( my $json = {lat => $lat, lng => $lng} ) {
       if ( ref $json eq 'HASH' ) {
         return $c->send({json => {}}) unless $json->{lat} && $json->{lng};
         $log->info("$code : $msg");
