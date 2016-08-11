@@ -6,5 +6,6 @@
     <div class="left">
       <p>&copy; 2015</p>
       <p><a href="<%= url_for 'privacy' %>">privacy policy</a></p>
+      <p><a href="<%= url_for 'app' %>">android app</a></p>
     </div>
 </div>

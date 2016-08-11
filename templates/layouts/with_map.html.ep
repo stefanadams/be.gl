@@ -8,7 +8,7 @@
         <link href='//fonts.googleapis.com/css?family=Dosis:500,600' rel='stylesheet' type='text/css'>
         <meta name="viewport" content="width=device-width">
         %= asset 'begl.css'
-        <script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
+        <script src="//maps.googleapis.com/maps/api/js?key=<%=config('googlemaps')->{apikey} %>"></script>
         %= asset 'begl.js'
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -61,7 +61,7 @@
                 labelStyle: {opacity:1.0}
                 */
               });
-            });
+            }, function(err) { $('#private-code').html('ERROR(' + err.code + '): ' + err.message); });
           }
 
           % my $ws_url = url_for 'pals';
