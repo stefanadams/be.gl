@@ -21,6 +21,9 @@
         </script>
         <script>
           if (window.hyper && window.hyper.log) { console.log = hyper.log }
+          if (window.location.protocol != "https:") {
+              window.location.href = "https:" + window.location.href.substring(window.location.protocol.length);
+          }
 
           var beglmap;
           var pals = [];
